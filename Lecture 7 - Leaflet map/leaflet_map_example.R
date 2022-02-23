@@ -36,8 +36,24 @@ TSOI_pal <- colorBin(palette = c("#05475e", "#faff78", "#ff9a00", "#ff3500"),
 leaflet() %>%
   
 ###Add a basemap
-  addProviderTiles(providers$OpenTopoMap) %>% #Examples: https://leaflet-extras.github.io/leaflet-providers/preview/
+  #Example basemaps: https://leaflet-extras.github.io/leaflet-providers/preview/
   
+  #if only adding one basemap, use the next line:
+  #addProviderTiles(providers$OpenTopoMap) %>% 
+  
+  #if you want to give user option to select between different basemaps, use lines 44-54
+  addProviderTiles("Stamen.Terrain", group = "Stamen.Terrain") %>%
+  addProviderTiles("Esri.WorldTopoMap", group = "Esri.WorldTopoMap") %>%     
+  addProviderTiles("Esri.WorldImagery", group = "Esri.WorldImagery") %>%
+  # This next block adds basemap layer controls tot he top left of the map window
+  addLayersControl(
+    baseGroups = c(
+      "Esri.WorldTopoMap",
+      "Esri.WorldImagery", 
+      "Stamen.Terrain"),
+    position = "topleft",
+    options = layersControlOptions(collapsed = TRUE, autoZIndex = FALSE)) %>%
+
 ### Add markers
   #addMarkers(lng = rcdata$LONGITUDE, # Add markers from lat, long data columns
   #           lat = rcdata$LATITUDE,
@@ -83,7 +99,7 @@ leaflet() %>%
     smoothFactor = 1
   ) %>%
   
-### Add or remopve map elements
+### Example code for how to add or remove map elements by group name
 #clearGroup('rcrk_boundary') #to add, use "showGroup()"
 
 ### Add raster image
