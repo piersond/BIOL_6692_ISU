@@ -1,0 +1,102 @@
+library(dplyr)
+library(leaflet)
+library(rgdal)
+library(raster)
+
+# Set working drive
+setwd("C:/github/BIOL_6692_ISU/Lecture 7 - Leaflet map")
+
+# Load tabular dataset with lat & long data in decimal degrees 
+rcdata <- read.csv("RCrk_data.csv", as.is=T)
+
+# Create a color palette for map points
+pal <- colorNumeric(palette = "RdBu", domain = c(0:10), na.color = "#ffffff")
+
+# Load Reynolds Creek boundary shapefile
+rc_boundary <- readOGR("./map_data/RCrk_Boundary.shp")
+
+# Set shapefile projection
+rc_boundary <- spTransform(rc_boundary, CRS("+init=epsg:4326")) #Find epsg #'s at: https://epsg.io/
+
+# Load raster image
+rc_TSOI <- raster("./map_data/tsoi_est2_3857.tif")
+
+# Create raster color palette
+TSOI_pal <- colorBin(palette = c("#05475e", "#faff78", "#ff9a00", "#ff3500"),
+                     domain = getValues(rc_TSOI),
+                     bins = c(5:15), 
+                     pretty = TRUE,
+                     na.color = "transparent")
+
+#####################################
+# Begin Leaflet map
+#####################################
+
+### Initiate a leaflet map
+leaflet() %>%
+  
+###Add a basemap
+  addProviderTiles(providers$OpenTopoMap) %>% #Examples: https://leaflet-extras.github.io/leaflet-providers/preview/
+  
+### Add markers
+  #addMarkers(lng = rcdata$LONGITUDE, # Add markers from lat, long data columns
+  #           lat = rcdata$LATITUDE,
+  #           group = "markers") 
+
+### Add points
+  addCircleMarkers(
+    lng = rcdata$LONGITUDE,
+    lat = rcdata$LATITUDE,
+    radius = 10,
+    layerId = NULL,
+    group = "SOC_points",
+    stroke = TRUE,
+    color = "#000000",
+    weight = 2,
+    opacity = 0.9,
+    fill = TRUE,
+    fillColor = pal(rcdata$SOC_field),#"#ffffff",
+    fillOpacity = 0.9,
+    dashArray = NULL,
+    label = rcdata$SOC_field
+  ) %>%
+  
+### Add legend
+  addLegend("bottomright",
+            group="SOC_points",
+            pal=pal, 
+            values=rcdata$SOC_field, 
+            title="SOC (%)",
+            layerId="pointLegend") %>%
+  
+### Add shapefile
+  addPolygons(
+    data=rc_boundary,
+    group = "rcrk_boundary",
+    stroke = TRUE,
+    color = "black",
+    weight = 5,
+    opacity = 1,
+    fill = TRUE,
+    fillColor = "blue",
+    fillOpacity = 0.1,
+    smoothFactor = 1
+  ) %>%
+  
+### Add or remopve map elements
+#clearGroup('rcrk_boundary') #to add, use "showGroup()"
+
+### Add raster image
+  addRasterImage(rc_TSOI,
+               maxBytes = 5000000, 
+               colors = TSOI_pal,
+               opacity = 0.5, 
+               group = "TSOI") %>%
+
+### Add raster colorscale legend  
+  addLegend("bottomleft",
+            group="TSOI",
+            pal=TSOI_pal, 
+            values=getValues(rc_TSOI), 
+            title="Mean Annual<br>Soil Temperature (°C)", #degree circle = ALT+0176
+            layerId="TSOI_Legend") 
