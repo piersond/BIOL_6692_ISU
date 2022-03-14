@@ -1,13 +1,16 @@
 # Random forest example
 # Adapted from https://kevintshoemaker.github.io/NRES-746/RandomForests.html
 
-### Let's predict mpg from engine displacment using the mtcars data
+### Let's predict mpg from engine displacement using the mtcars data
+
+df <- mtcars
+
 
 ### Create a single decision tree
 library(rpart)
 library(rpart.plot)
 tree <- rpart(formula = mpg~disp, data = mtcars, 
-              control = rpart.control(maxdepth = 3, # max tree layers
+              control = rpart.control(maxdepth = 5, # max tree layers
                                       minbucket = 1, # min n in a bucket 
                                       cp = 0)) # complexity cost
 # Plot the tree

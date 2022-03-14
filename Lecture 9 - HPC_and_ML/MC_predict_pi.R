@@ -1,7 +1,7 @@
 # Monte Carlo example
 # Predict value of pi
 
-iterations = 1000
+iterations = 100000
   
 # generate the random set of (x, y) points
 x <- runif(n = iterations, min = 0, max = 1)
