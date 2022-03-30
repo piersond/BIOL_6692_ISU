@@ -6,9 +6,10 @@ import numpy as np
 
 ### Creating pandas data frames
 # Import data into pandas table from .csv
-csv_path = r'C:\github\BIOL_6692_ISU\Lecture 4\RCrk_data.csv'
+csv_path = r'C:/github/BIOL_6692_ISU/Lecture 4/RCrk_data.csv'
 df = pd.read_csv(csv_path)
 print(df)
+print(df['SOC_field'][1:5])
 
 # Manually create a pandas data frame 
 df2 = pd.DataFrame(
@@ -40,3 +41,4 @@ print(df[0:3])
 # By index
 print(df.iloc[3:5, 0:2]) # Goes up to, but does not include, the last index number
 print(df.iloc[[3, 4, 5], [0, 1, 2]]) # Use to get values from exact index numbers
+
